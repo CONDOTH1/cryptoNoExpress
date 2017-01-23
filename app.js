@@ -36,11 +36,17 @@ var server = http.createServer(function (request, response) {
 
   if (parsedURL.pathname === '/verify' && request.method === 'GET') {
     var cookies = parseCookies(request);
-    decryptedMessage = cipherDecipher.decrypt(cookies.mycookie)
-    if (decryptedMessage === userOne) {
-      response.end('Hopefully this works: ' + decryptedMessage + '\n')
+    if (cookies.mycookie === 'deleted') {
+      // console.log("This is the token: " + cookies.mycookie);
+      response.end('Token expired');
     } else {
-      response.end('Not authorised')
+      decryptedMessage = cipherDecipher.decrypt(cookies.mycookie);
+    }
+    // console.log("this is the decrypt message: " + decryptedMessage);
+    if (decryptedMessage === userOne) {
+      response.end('Hopefully this works: ' + decryptedMessage + '\n');
+    } else {
+      response.end('Not authorised');
     }
     // var cookies = parseCookies(request);
     // if (verified === false) {
@@ -58,7 +64,7 @@ var server = http.createServer(function (request, response) {
 
   if (parsedURL.pathname === '/token' && request.method === 'GET') {
     var cookies = parseCookies(request);
-    console.log('These are the cookies: ' + cookies.mycookie);
+    // console.log('These are the cookies: ' + cookies.mycookie);
     // if (cookies.mycookie === 'authorised') {
       let encryptedMessage = cipherDecipher.encrypt(userOne);
       setCookie(response, encryptedMessage);
@@ -76,7 +82,7 @@ var server = http.createServer(function (request, response) {
   }
 
   if (parsedURL.pathname === '/revoke' && request.method === 'GET') {
-    console.log('Logout');
+    // console.log('Logout');
     setCookie(response, 'deleted')
     response.end('Logout successful\n');
   }
